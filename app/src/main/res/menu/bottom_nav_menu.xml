@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@android:drawable/ic_menu_camera"
+        android:title="@string/title_camera" />
+    <item
+        android:id="@+id/navigation_converter"
+        android:icon="?android:attr/listChoiceIndicatorSingle"
+        android:title="@string/title_converter" />
+
+    <item
+        android:id="@+id/navigation_historic"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="@string/title_historic" />
+
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/title_settings" />
+
+</menu>
