@@ -15,8 +15,10 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.coincounter.apiCall
 import com.example.coincounter.changerates
 import com.example.coincounter.databinding.FragmentConverterBinding
+import java.util.Objects
 
 
 class ConvertFragment : Fragment() {
@@ -27,7 +29,7 @@ class ConvertFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private var rates: changerates? = null
+    private var rates: changerates? = changerates("","",0,"",mapOf<String, Double>())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,10 +41,8 @@ class ConvertFragment : Fragment() {
 
         _binding = FragmentConverterBinding.inflate(inflater, container, false)
 
-        val bundle = this.arguments
-        if (bundle != null) {
-            rates = bundle.getSerializable("rates")!! as changerates
-        }
+        var ap: apiCall = apiCall()
+        rates = ap.run(this.requireContext())
 
         val spinner: Spinner = binding.spMoney
         val spinnerRate: Spinner = binding.spRate
@@ -51,12 +51,14 @@ class ConvertFragment : Fragment() {
 
         val root: View = binding.root
 
+
+
         /*val textView: TextView = binding.textNotifications
         convertViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }*/
 
-        if (rates != null) {
+        if (rates != null && rates?.base != ""){
             var ratesList = rates!!.rateKeysToList()
 
             val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, ratesList)
@@ -91,6 +93,26 @@ class ConvertFragment : Fragment() {
         })
 
         return root
+    }
+
+    public fun setRates(rates: changerates) {
+        this.rates = rates
+        if (rates != null) {
+            val spinner: Spinner = binding.spMoney
+            val spinnerRate: Spinner = binding.spRate
+
+            var ratesList = rates!!.rateKeysToList()
+
+            val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, ratesList)
+            adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+
+            val adapterRate = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, ratesList)
+            adapterRate.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+            spinnerRate.adapter = adapter
+            //val textView2: TextView = binding.textNotifications2
+            //textView2.text = rates!!.rates["USD"].toString()
+        }
     }
 
     override fun onDestroyView() {

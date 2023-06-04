@@ -34,9 +34,11 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        var ap = apiCall()
+        //var ap = apiCall()
+        //rates = ap.run(applicationContext)
+        //print(rates)
+        var ap:apiCall = apiCall()
         rates = ap.run(applicationContext)
-        print(rates)
         val bundle = Bundle()
         bundle.putSerializable("rates", rates)
         navController.navigate(R.id.navigation_converter, bundle)

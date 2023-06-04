@@ -1,26 +1,33 @@
 package com.example.coincounter
 
+import android.R
 import android.content.Context
-import okhttp3.*
-import java.io.IOException
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import com.example.coincounter.ui.convert.ConvertFragment
 import com.google.gson.Gson
+import okhttp3.*
 import java.io.File
 import java.io.FileWriter
-import java.io.PrintWriter
+import java.io.IOException
 import java.nio.charset.Charset
 import java.util.*
 
+
 class apiCall {
-    private val client = OkHttpClient()
-    private val url = "https://openexchangerates.org/api/latest.json?app_id="
-    private val app_id = "30769ec2639e454d9e6abfc45a565a41"
-    private val path = "changerates.json"
+     val client = OkHttpClient()
+     val url = "https://openexchangerates.org/api/latest.json?app_id="
+     val app_id = "30769ec2639e454d9e6abfc45a565a41"
+     val path = "changerates.json"
+     val url_final = this.url + this.app_id
+     val c:Context? = null
+     var localpath:String = ""
 
     var rates:changerates? = null
 
 
-    fun run(c: Context, url: String = this.url + this.app_id):changerates? {
-        val localpath:String =  c.getFilesDir().toPath().toString() + path
+    fun run(c: Context, url: String = url_final):changerates? {
+        localpath =  c.getFilesDir().toPath().toString() + path
 
         var file = File(localpath)
 
@@ -33,26 +40,28 @@ class apiCall {
             }
 
             if(this.rates == null || this.rates!!.timestamp == null){
-                call(localpath)
+                return null
             }else{
                 if(isNextDay(this.rates!!.timestamp)){
-                    call(localpath)
+                    return null
                 }
             }
         }else{
-            call(localpath)
+            return null
         }
 
         return this.rates
     }
 
-    fun call(localpath:String) {
+    fun call(localpath:String, url:String) {
         val request = Request.Builder()
             .url(url)
             .build()
 
         client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {}
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
             override fun onResponse(call: Call, response: Response){
                 val t = response.body()?.string()
                 try {
@@ -68,7 +77,6 @@ class apiCall {
             }
         })
     }
-
 
     fun isNextDay(timestamp: Long): Boolean {
         val inputDate = Calendar.getInstance()
