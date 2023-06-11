@@ -117,7 +117,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
             value += result.categories[0].label.toFloat()
         }
-        var drawableText ="Euro: " + String.format("%.2f", value/100f) + " €"
+        var drawableText ="EUR: " + String.format("%.2f", value/100f)
         canvas.drawText(drawableText, 0.0f, 60.0f, textPaintValue)
 
         var mSettings = context!!.getSharedPreferences(PREFS_NAME, 0)
@@ -125,11 +125,14 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             val savedRate = mSettings.getString(DATA_TAG, "")
             if (rates != null && rates?.base != "" && savedRate != "") {
                 val result:Double = rates!!.changeRate("EUR", savedRate!!, value.toDouble())
-
-                drawableText ="Outra: " + String.format("%.2f", result.toFloat()/100f) + " " + savedRate
-                canvas.drawText(drawableText, 0.0f, 130.0f, textPaintValue)
+                drawableText = savedRate + " " + String.format("%.2f", result.toFloat()/100f) + " " + savedRate
+            }else{
+                drawableText = "-----------"
             }
+        }else{
+            drawableText = "-----------"
         }
+        canvas.drawText(drawableText, 0.0f, 130.0f, textPaintValue)
     }
 
     fun setResults(

@@ -37,12 +37,15 @@ class apiCall {
                 this.rates = Gson().fromJson(t, changerates::class.java)
             }catch (e: Exception) {
                 e.printStackTrace()
+                file.delete()
             }
 
             if(this.rates == null || this.rates!!.timestamp == null){
+                file.delete()
                 return null
             }else{
                 if(isNextDay(this.rates!!.timestamp)){
+                    file.delete()
                     return null
                 }
             }

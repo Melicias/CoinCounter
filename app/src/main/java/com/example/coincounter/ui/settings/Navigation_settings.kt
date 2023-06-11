@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.coincounter.apiCall
 import com.example.coincounter.changerates
@@ -58,6 +59,8 @@ class navigation_settings : Fragment() {
             val editor = mSettings.edit()
             editor.putString(DATA_TAG, selectedRate)
             editor.commit()
+
+            Toast.makeText(requireContext(), "Saved", Toast.LENGTH_SHORT).show()
         }
 
         return root
