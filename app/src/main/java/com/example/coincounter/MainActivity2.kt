@@ -1,25 +1,67 @@
 package com.example.coincounter
 
-import android.content.Context
+import android.Manifest
+import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.example.coincounter.databinding.ActivityMain2Binding
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import okhttp3.*
-import java.io.File
 import java.io.FileWriter
 import java.io.IOException
-import java.nio.charset.Charset
+
+
+private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
+
+private const val PERMISSION_REQUEST_CODE = 200
+
+private lateinit var layout: View
+
+private lateinit var binding: ActivityMain2Binding
 
 class MainActivity2 : AppCompatActivity() {
 
     var rates:changerates? = null
     var ap:apiCall = apiCall()
     val client = OkHttpClient()
+
+    val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            //if (isGranted) {
+                //Toast.makeText(applicationContext, "Permission request granted", Toast.LENGTH_LONG).show()
+                //getRates()
+            //} else {
+                //Toast.makeText(applicationContext, "Permission request denied", Toast.LENGTH_LONG).show()
+                //getRates()
+            //}
+            getRates()
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
 
+        binding = ActivityMain2Binding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+    }
+
+
+
+    fun getRates(){
         rates = ap.run(applicationContext)
 
         if (rates == null){
@@ -52,7 +94,7 @@ class MainActivity2 : AppCompatActivity() {
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
-
+                    requestPermissionLauncher.launch(Manifest.permission.CAMERA)
                     val intent = Intent(applicationContext, MainActivity::class.java)
                     startActivity(intent)
                 }catch (e: Exception) {
@@ -61,6 +103,4 @@ class MainActivity2 : AppCompatActivity() {
             }
         })
     }
-
-
 }

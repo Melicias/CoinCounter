@@ -9,7 +9,7 @@
         android:title="@string/title_camera" />
     <item
         android:id="@+id/navigation_converter"
-        android:icon="?android:attr/listChoiceIndicatorSingle"
+        android:icon="@android:drawable/stat_notify_sync"
         android:title="@string/title_converter" />
 
     <item
@@ -19,7 +19,7 @@
 
     <item
         android:id="@+id/navigation_settings"
-        android:icon="@drawable/ic_home_black_24dp"
+        android:icon="@android:drawable/ic_menu_preferences"
         android:title="@string/title_settings" />
 
 </menu>
