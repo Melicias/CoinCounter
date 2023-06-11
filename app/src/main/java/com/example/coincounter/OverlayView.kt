@@ -44,8 +44,15 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
     private var value:Float = 0.0f
 
+    private var rates: changerates? = changerates("","",0,"",mapOf<String, Double>())
+    private val PREFS_NAME = "YOUR_TAG"
+    private val DATA_TAG = "RATE_PREFERENCE"
+
     init {
         initPaints()
+
+        var ap: apiCall = apiCall()
+        rates = ap.run(getContext())
     }
 
     fun clear() {
@@ -112,8 +119,17 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         }
         var drawableText ="Euro: " + String.format("%.2f", value/100f) + " €"
         canvas.drawText(drawableText, 0.0f, 60.0f, textPaintValue)
-        drawableText ="Outra: " + String.format("%.2f", value/100f) + " €"
-        canvas.drawText(drawableText, 0.0f, 130.0f, textPaintValue)
+
+        var mSettings = context!!.getSharedPreferences(PREFS_NAME, 0)
+        if (mSettings.contains(DATA_TAG)) {
+            val savedRate = mSettings.getString(DATA_TAG, "")
+            if (rates != null && rates?.base != "" && savedRate != "") {
+                val result:Double = rates!!.changeRate("EUR", savedRate!!, value.toDouble())
+
+                drawableText ="Outra: " + String.format("%.2f", result.toFloat()/100f) + " " + savedRate
+                canvas.drawText(drawableText, 0.0f, 130.0f, textPaintValue)
+            }
+        }
     }
 
     fun setResults(
