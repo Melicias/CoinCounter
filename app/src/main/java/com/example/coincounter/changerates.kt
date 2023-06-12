@@ -23,6 +23,9 @@ data class changerates (
     }
 
     fun rateKeysToList(): List<String> {
+        if(rates==null){
+            return listOf("test")
+        }
         return rates.keys.toList()
     }
 
