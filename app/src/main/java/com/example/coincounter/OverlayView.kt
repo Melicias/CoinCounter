@@ -45,14 +45,26 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     private var value:Float = 0.0f
 
     private var rates: changerates? = changerates("","",0,"",mapOf<String, Double>())
+
+    private var CentsMap: Map<String, Boolean> = mapOf<String, Boolean>()
+    private var hasFalseValue:Boolean = false
     private val PREFS_NAME = "YOUR_TAG"
     private val DATA_TAG = "RATE_PREFERENCE"
+    private val CB1CENT = "CB1CENT"
+    private val CB2CENT = "CB2CENT"
+    private val CB5CENT = "CB5CENT"
+    private val CB10CENT = "CB10CENT"
+    private val CB20CENT = "CB20CENT"
+    private val CB50CENT = "CB50CENT"
+    private val CB1EURO = "CB1EURO"
+    private val CB2EURO = "CB2EURO"
 
     init {
         initPaints()
 
         var ap: apiCall = apiCall()
         rates = ap.run(getContext())
+        initCentMap()
     }
 
     fun clear() {
@@ -61,6 +73,20 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         boxPaint.reset()
         invalidate()
         initPaints()
+        initCentMap()
+    }
+
+    private fun initCentMap(){
+        var mSettings = context!!.getSharedPreferences(PREFS_NAME, 0)
+        CentsMap = mapOf<String, Boolean>("1" to mSettings.getBoolean(CB1CENT,true),"2" to mSettings.getBoolean(CB2CENT,true),
+        "5" to mSettings.getBoolean(CB5CENT,true), "10" to mSettings.getBoolean(CB10CENT,true),"20" to mSettings.getBoolean(CB20CENT,true),
+        "50" to mSettings.getBoolean(CB50CENT,true),"100" to mSettings.getBoolean(CB1EURO,true),"200" to mSettings.getBoolean(CB2EURO,true))
+        for (entry in CentsMap) {
+            if (!entry.value) {
+                hasFalseValue = true
+                break
+            }
+        }
     }
 
     private fun initPaints() {
@@ -85,6 +111,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         super.draw(canvas)
         value = 0.0f
         for (result in results) {
+            if (hasFalseValue && CentsMap.containsKey(result.categories[0].label) && CentsMap[result.categories[0].label] == false) {
+                continue
+            }
             val boundingBox = result.boundingBox
 
             val top = boundingBox.top * scaleFactor
