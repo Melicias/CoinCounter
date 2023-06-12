@@ -1,16 +1,28 @@
 package com.example.coincounter.ui.camera
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Matrix
+import android.graphics.Rect
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.SurfaceView
+import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.TextView
+import android.widget.Button
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
@@ -18,23 +30,30 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.graphics.get
+import androidx.core.view.drawToBitmap
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
 import com.example.coincounter.ObjectDetectorHelper
+import com.example.coincounter.R
 import com.example.coincounter.databinding.FragmentCameraBinding
 import org.tensorflow.lite.task.vision.detector.Detection
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.LinkedList
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+
 class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
 
     private val TAG = "ObjectDetection"
-
     private var _fragmentCameraBinding: FragmentCameraBinding? = null
-
+    private val binding get() = _fragmentCameraBinding!!
     private val fragmentCameraBinding
         get() = _fragmentCameraBinding!!
 
@@ -44,7 +63,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
-
+    private var surfaceView:SurfaceView?=null
     /** Blocking camera operations are performed using this executor */
     private lateinit var cameraExecutor: ExecutorService
 
@@ -72,10 +91,145 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
         savedInstanceState: Bundle?
     ): View {
         _fragmentCameraBinding = FragmentCameraBinding.inflate(inflater, container, false)
+        val btSave: Button = binding.btnScreenShot
 
+        btSave.setOnClickListener {
+
+            if (!checkPermission()
+            ) {
+               requestPermission()
+                return@setOnClickListener
+            }
+           /*val rootView = requireActivity().window.decorView.rootView
+            val viewFinder = rootView?.findViewById<View>(R.id.view_finder)!!
+            val previewChildView = fragmentCameraBinding.viewFinder.getChildAt(0) as TextureView
+            val bitmap2 = previewChildView.getBitmap(viewFinder.width,viewFinder.height)!!
+            val overlayView = rootView?.findViewById<View>(R.id.overlay)
+            val canvas = Canvas(bitmap2)
+            //rootView?.draw(canvas)
+            overlayView?.draw(canvas)*/
+            val rootView = requireActivity().window.decorView.rootView
+
+            val overlayView = rootView?.findViewById<View>(R.id.overlay)
+            val viewFinder = fragmentCameraBinding.viewFinder
+
+            val rect = Rect()
+            viewFinder.getGlobalVisibleRect(rect)
+            val startX = rect.left
+            val startY = rect.top
+
+            val bitmap = Bitmap.createBitmap(viewFinder.width, viewFinder.height, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            canvas.drawBitmap(viewFinder.bitmap!!, -startX.toFloat(), -startY.toFloat(), null)
+            overlayView?.draw(canvas)
+
+
+            try {
+                val folderName = "CoinCounter"
+                val storageDir = File(Environment.getExternalStorageDirectory(), folderName)
+                if (!storageDir.exists()) {
+                    storageDir.mkdirs()
+                }
+                val screenshotFile = File.createTempFile("screenshot", ".png", storageDir)
+                val outputStream = FileOutputStream(screenshotFile)
+                bitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream)
+                outputStream.flush()
+                outputStream.close()
+
+                Toast.makeText(
+                    this@CameraFragment.context,
+                    "Screenshot saved: " + screenshotFile.absolutePath,
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                // Open the screenshot file with an intent
+                // Replace YourActivityToDisplayScreenshot with your desired activity to display the screenshot
+                // You can also use other apps like image viewers to open the screenshot file
+                val uri: Uri = FileProvider.getUriForFile(
+                    this@CameraFragment.requireContext(),
+                    "com.yourdomain.fileprovider",
+                    screenshotFile
+                )
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.setDataAndType(uri, requireActivity().contentResolver.getType(uri))
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                startActivity(intent)
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+
+        }
         return fragmentCameraBinding.root
     }
+    private fun requestPermission(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            //Android is 11(R) or above
+            try {
+                Log.d(TAG, "requestPermission: try")
+                val intent = Intent()
+                intent.action = Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
+                val uri = Uri.fromParts("package", requireContext().packageName, null)
+                intent.data = uri
+                storageActivityResultLauncher.launch(intent)
+            }
+            catch (e: Exception){
+                Log.e(TAG, "requestPermission: ", e)
+                val intent = Intent()
+                intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
+                storageActivityResultLauncher.launch(intent)
+            }
+        }
+        else{
+            //Android is below 11(R)
+            ActivityCompat.requestPermissions(this@CameraFragment.requireActivity(),
+                arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE),
+                100
+            )
+        }
+    }
+    private val storageActivityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        Log.d(TAG, "storageActivityResultLauncher: ")
+        //here we will handle the result of our intent
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            //Android is 11(R) or above
+            if (Environment.isExternalStorageManager()){
+                //Manage External Storage Permission is granted
+                Log.d(TAG, "storageActivityResultLauncher: Manage External Storage Permission is granted")
+                Toast.makeText(this@CameraFragment.requireContext(), "storageActivityResultLauncher: Manage External Storage Permission is granted", Toast.LENGTH_LONG).show()
+            }
+            else{
+                //Manage External Storage Permission is denied....
+                Log.d(TAG, "storageActivityResultLauncher: Manage External Storage Permission is denied....")
+                Toast.makeText(this@CameraFragment.requireContext(), "Manage External Storage Permission is denied....", Toast.LENGTH_LONG).show()
 
+
+            }
+        }
+        else{
+            //Android is below 11(R)
+        }
+    }
+    private fun checkPermission(): Boolean{
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            //Android is 11(R) or above
+            Environment.isExternalStorageManager()
+        }
+        else{
+            //Android is below 11(R)
+            val write = ContextCompat.checkSelfPermission(this.requireContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            val read = ContextCompat.checkSelfPermission(this.requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            write == PackageManager.PERMISSION_GRANTED && read == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    private fun openScreenshot(imageFile: File) {
+        val intent = Intent()
+        intent.action = Intent.ACTION_VIEW
+        val uri = Uri.fromFile(imageFile)
+        intent.setDataAndType(uri, "image/*")
+        startActivity(intent)
+    }
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -256,10 +410,14 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
         try {
             // A variable number of use-cases can be passed here -
             // camera provides access to CameraControl & CameraInfo
-            camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
-
+            //camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
+            preview=Preview.Builder().build()
+            fragmentCameraBinding.viewFinder.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+            //val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+            //val imageAnalyzer = ImageAnalysis.Builder().build()
             // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(fragmentCameraBinding.viewFinder.surfaceProvider)
+            cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
         } catch (exc: Exception) {
             Log.e(TAG, "Use case binding failed", exc)
         }
