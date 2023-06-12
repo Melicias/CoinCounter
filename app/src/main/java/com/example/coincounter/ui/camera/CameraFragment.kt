@@ -112,8 +112,9 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
             val overlayView = rootView?.findViewById<View>(R.id.overlay)
             val view_finder = rootView.findViewById<View>(R.id.view_finder)!!
             val viewFinder = fragmentCameraBinding.viewFinder.getChildAt(0) as TextureView
-            val bitmap = viewFinder.getBitmap(view_finder.width,view_finder.height)!!
-            val resizedBmp=Bitmap.createBitmap(bitmap,view_finder.x.toInt(),0,view_finder.width,view_finder.height)
+            view_finder.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            val bitmap = viewFinder.getBitmap(view_finder.measuredWidth, view_finder.height)!!
+            val resizedBmp = Bitmap.createBitmap(bitmap, view_finder.x.toInt(), 0, view_finder.measuredWidth, view_finder.height)
 
             val canvas = Canvas(resizedBmp)
             overlayView?.draw(canvas)
