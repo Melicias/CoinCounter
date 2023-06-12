@@ -10,6 +10,9 @@
     <string name="tvConvertMoneyRate_string">To</string>
     <string name="settings_sp">Always convert to</string>
     <string name="settings_bt">Save</string>
+    <string name="textView_settings_tittle">Settings</string>
+
+
 
 
     <string name="alt_bottom_sheet_chevron">Bottom sheet expandable indicator</string>
