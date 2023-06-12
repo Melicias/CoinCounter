@@ -125,7 +125,11 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
 
 
             try {
-                val storageDir: File = Environment.getExternalStorageDirectory()
+                val folderName = "CoinCounter"
+                val storageDir = File(Environment.getExternalStorageDirectory(), folderName)
+                if (!storageDir.exists()) {
+                    storageDir.mkdirs()
+                }
                 val screenshotFile = File.createTempFile("screenshot", ".png", storageDir)
                 val outputStream = FileOutputStream(screenshotFile)
                 bitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream)
