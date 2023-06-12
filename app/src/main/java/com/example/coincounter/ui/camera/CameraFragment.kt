@@ -7,6 +7,7 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Matrix
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -110,13 +111,16 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
             val rootView = requireActivity().window.decorView.rootView
 
             val overlayView = rootView?.findViewById<View>(R.id.overlay)
-            val view_finder = rootView.findViewById<View>(R.id.view_finder)!!
-            val viewFinder = fragmentCameraBinding.viewFinder.getChildAt(0) as TextureView
-            view_finder.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-            val bitmap = viewFinder.getBitmap(view_finder.measuredWidth, view_finder.height)!!
-            val resizedBmp = Bitmap.createBitmap(bitmap, view_finder.x.toInt(), 0, view_finder.measuredWidth, view_finder.height)
+            val viewFinder = fragmentCameraBinding.viewFinder
 
-            val canvas = Canvas(resizedBmp)
+            val rect = Rect()
+            viewFinder.getGlobalVisibleRect(rect)
+            val startX = rect.left
+            val startY = rect.top
+
+            val bitmap = Bitmap.createBitmap(viewFinder.width, viewFinder.height, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            canvas.drawBitmap(viewFinder.bitmap!!, -startX.toFloat(), -startY.toFloat(), null)
             overlayView?.draw(canvas)
 
 
@@ -124,7 +128,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
                 val storageDir: File = Environment.getExternalStorageDirectory()
                 val screenshotFile = File.createTempFile("screenshot", ".png", storageDir)
                 val outputStream = FileOutputStream(screenshotFile)
-                resizedBmp.compress(Bitmap.CompressFormat.PNG, 90, outputStream)
+                bitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream)
                 outputStream.flush()
                 outputStream.close()
 
