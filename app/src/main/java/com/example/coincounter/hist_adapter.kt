@@ -5,10 +5,12 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.RectF
+import android.net.Uri
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +23,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -84,6 +87,18 @@ class hist_adapter(conversions: LinkedList<Conversion>) : RecyclerView.Adapter<h
 
         ivscreenshotHist.setOnClickListener(View.OnClickListener {
             //zoomImageFromThumb(ivscreenshotHist, BitmapFactory.decodeFile(imgFile.absolutePath),container,expanded_image)
+            // Open the screenshot file with an intent
+            // Replace YourActivityToDisplayScreenshot with your desired activity to display the screenshot
+            // You can also use other apps like image viewers to open the screenshot file
+            val uri: Uri = FileProvider.getUriForFile(
+                context!!,
+                "com.yourdomain.fileprovider",
+                imgFile
+            )
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setDataAndType(uri, context!!.contentResolver.getType(uri))
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            context!!.startActivity(intent)
         })
 
         //shortAnimationDuration = context!!.resources.getInteger(android.R.integer.config_shortAnimTime)
