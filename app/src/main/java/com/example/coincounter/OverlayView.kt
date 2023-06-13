@@ -42,7 +42,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
     private var bounds = Rect()
 
-    private var value:Float = 0.0f
+    var value:Float = 0.0f
+    var valueRate:String = ""
 
     private var rates: changerates? = changerates("","",0,"",mapOf<String, Double>())
 
@@ -154,7 +155,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             val savedRate = mSettings.getString(DATA_TAG, "")
             if (rates != null && rates?.base != "" && savedRate != "") {
                 val result:Double = rates!!.changeRate("EUR", savedRate!!, value.toDouble())
-                drawableText = savedRate + " " + String.format("%.2f", result.toFloat()/100f) + " " + savedRate
+                valueRate = savedRate + ": " + String.format("%.2f", result.toFloat()/100f)
+                drawableText = savedRate + ": " + String.format("%.2f", result.toFloat()/100f)
             }else{
                 drawableText = "-----------"
             }

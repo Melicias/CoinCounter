@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Matrix
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
@@ -16,7 +15,6 @@ import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.SurfaceView
-import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -34,16 +32,20 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.graphics.get
-import androidx.core.view.drawToBitmap
 import androidx.fragment.app.Fragment
+import com.example.coincounter.Conversion
 import com.example.coincounter.ObjectDetectorHelper
 import com.example.coincounter.R
 import com.example.coincounter.databinding.FragmentCameraBinding
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import org.tensorflow.lite.task.vision.detector.Detection
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.reflect.Type
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.LinkedList
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -66,6 +68,9 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
     private var surfaceView:SurfaceView?=null
     /** Blocking camera operations are performed using this executor */
     private lateinit var cameraExecutor: ExecutorService
+
+    private val PREFS_NAME = "YOUR_TAG"
+    private val CONVERSION_TAG = "conversion"
 
     override fun onResume() {
         super.onResume()
@@ -123,7 +128,6 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
             canvas.drawBitmap(viewFinder.bitmap!!, -startX.toFloat(), -startY.toFloat(), null)
             overlayView?.draw(canvas)
 
-
             try {
                 val folderName = "CoinCounter"
                 val storageDir = File(Environment.getExternalStorageDirectory(), folderName)
@@ -136,9 +140,34 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
                 outputStream.flush()
                 outputStream.close()
 
+
+                var mSettings = requireContext().getSharedPreferences(PREFS_NAME, 0)
+                val now = LocalDateTime.now()
+                val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+                val formattedString = now.format(formatter)
+                var c: Conversion = Conversion(screenshotFile.absolutePath, formattedString,"EUR: " + String.format("%.2f", fragmentCameraBinding.overlay.value/100f),fragmentCameraBinding.overlay.valueRate);
+                if(mSettings.contains(CONVERSION_TAG)) {
+                    val gson = Gson()
+                    val json: String = mSettings.getString(CONVERSION_TAG,"")!!
+                    val type: Type = object : TypeToken<LinkedList<Conversion?>?>() {}.type
+                    val conversions: LinkedList<Conversion> = gson.fromJson<LinkedList<Conversion>>(json, type)
+                    conversions.add(c)
+                    val json2: String = Gson().toJson(conversions)
+                    val editor = mSettings.edit()
+                    editor.putString(CONVERSION_TAG, json2)
+                    editor.commit()
+                }else{
+                    val conversions: LinkedList<Conversion> = LinkedList<Conversion>()
+                    conversions.add(c)
+                    val json2: String = Gson().toJson(conversions)
+                    val editor = mSettings.edit()
+                    editor.putString(CONVERSION_TAG, json2)
+                    editor.commit()
+                }
+
                 Toast.makeText(
                     this@CameraFragment.context,
-                    "Screenshot saved: " + screenshotFile.absolutePath,
+                    "Screenshot saved: ", //+ screenshotFile.absolutePath,
                     Toast.LENGTH_SHORT
                 ).show()
 
