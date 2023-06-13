@@ -100,8 +100,8 @@ class ConvertFragment : Fragment() {
             val money = money
             val rate = rate
             val moneyValue = etMoney.text.toString().toDouble()
-            val result:Double = rates!!.changeRate(money, rate, moneyValue)
-            etRate.setText(result.toString())
+            val result:Float = rates!!.changeRate(money, rate, moneyValue).toFloat()
+            etRate.setText(String.format("%.2f", result))
 
     }
 

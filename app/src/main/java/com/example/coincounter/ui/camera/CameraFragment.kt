@@ -19,6 +19,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.AspectRatio
@@ -96,7 +97,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
         savedInstanceState: Bundle?
     ): View {
         _fragmentCameraBinding = FragmentCameraBinding.inflate(inflater, container, false)
-        val btSave: Button = binding.btnScreenShot
+        val btSave: ImageButton = binding.btnScreenShot
 
         btSave.setOnClickListener {
 
@@ -174,7 +175,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
                 // Open the screenshot file with an intent
                 // Replace YourActivityToDisplayScreenshot with your desired activity to display the screenshot
                 // You can also use other apps like image viewers to open the screenshot file
-                val uri: Uri = FileProvider.getUriForFile(
+                /*val uri: Uri = FileProvider.getUriForFile(
                     this@CameraFragment.requireContext(),
                     "com.yourdomain.fileprovider",
                     screenshotFile
@@ -182,7 +183,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.setDataAndType(uri, requireActivity().contentResolver.getType(uri))
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                startActivity(intent)
+                startActivity(intent)*/
 
             } catch (e: IOException) {
                 e.printStackTrace()

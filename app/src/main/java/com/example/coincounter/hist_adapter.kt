@@ -66,10 +66,10 @@ class hist_adapter(conversions: LinkedList<Conversion>,placeholderText: TextView
         var tvCoinHist: TextView = holder.tvCoinHist
         var tvRateHist: TextView = holder.tvRateHist
         var tvDateHist: TextView = holder.tvDateHist
-        var ivscreenshotHist: ImageButton = holder.ivscreenshotHist
-        var btDelete: Button = holder.btDelete
-        var container : FrameLayout =  holder.container
-        var expanded_image : ImageView = holder.expanded_image
+        var ivscreenshotHist: ImageView = holder.ivscreenshotHist
+        var btDelete: ImageButton = holder.btDelete
+        //var container : FrameLayout =  holder.container
+        //var expanded_image : ImageView = holder.expanded_image
 
 
 
@@ -118,10 +118,11 @@ class hist_adapter(conversions: LinkedList<Conversion>,placeholderText: TextView
         lateinit var tvCoinHist: TextView
         lateinit var tvRateHist: TextView
         lateinit var tvDateHist: TextView
-        lateinit var ivscreenshotHist: ImageButton
-        lateinit var btDelete: Button
-        lateinit var container: FrameLayout
-        lateinit var expanded_image: ImageView
+        lateinit var ivscreenshotHist: ImageView
+        lateinit var btDelete: ImageButton
+        //lateinit var ivscreenshotHist: ImageButton
+        //lateinit var container: FrameLayout
+        //lateinit var expanded_image: ImageView
 
         init {
             tvCoinHist = itemView.findViewById(R.id.tvCoinHist)
@@ -129,8 +130,8 @@ class hist_adapter(conversions: LinkedList<Conversion>,placeholderText: TextView
             tvDateHist = itemView.findViewById(R.id.tvDateHist)
             ivscreenshotHist = itemView.findViewById(R.id.ivscreenshotHist)
             btDelete = itemView.findViewById(R.id.btDeleteHist)
-            container = itemView.findViewById(R.id.container)
-            expanded_image = itemView.findViewById(R.id.expanded_image)
+            //container = itemView.findViewById(R.id.container)
+            //expanded_image = itemView.findViewById(R.id.expanded_image)
             btDelete.setOnClickListener(View.OnClickListener {
                 val pos = adapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
