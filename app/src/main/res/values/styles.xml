@@ -29,4 +29,7 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
+    <style name="ShapeAppearanceOverlay.App.rounded50" parent="">
+        <item name="cornerSize">0%</item>
+    </style>
 </resources>

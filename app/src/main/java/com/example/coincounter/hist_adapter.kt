@@ -34,7 +34,7 @@ import java.time.format.DateTimeFormatter
 import java.util.LinkedList
 
 
-class hist_adapter(conversions: LinkedList<Conversion>) : RecyclerView.Adapter<hist_adapter.ViewHolder>() {
+class hist_adapter(conversions: LinkedList<Conversion>,placeholderText: TextView) : RecyclerView.Adapter<hist_adapter.ViewHolder>() {
 
     // Hold a reference to the current animator so that it can be canceled
     // midway.
@@ -49,8 +49,10 @@ class hist_adapter(conversions: LinkedList<Conversion>) : RecyclerView.Adapter<h
 
     var conversions: LinkedList<Conversion> = conversions
     var context: Context? = null
+    var placeholderText:TextView=placeholderText
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): hist_adapter.ViewHolder {
+
         context = parent.getContext()
         val inflater = LayoutInflater.from(context)
 
@@ -83,6 +85,10 @@ class hist_adapter(conversions: LinkedList<Conversion>) : RecyclerView.Adapter<h
 
         btDelete.setOnClickListener(View.OnClickListener {
             removeUpdate(c)
+            if (conversions.isEmpty()) {
+                this.placeholderText.setVisibility(View.VISIBLE);
+                this.placeholderText.text = "No conversions history available"
+            }
         })
 
         ivscreenshotHist.setOnClickListener(View.OnClickListener {

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,7 +43,7 @@ class HistoricFragment : Fragment() {
         val root: View = binding.root
 
         val rvHistoric: RecyclerView = binding.rvHistorico
-
+        val historicPlaceholder: TextView = binding.historicPlaceholder
         var mSettings = requireContext().getSharedPreferences(PREFS_NAME, 0)
         if(mSettings.contains(CONVERSION_TAG)) {
             val gson = Gson()
@@ -50,11 +51,16 @@ class HistoricFragment : Fragment() {
             val type: Type = object : TypeToken<LinkedList<Conversion?>?>() {}.type
             this.conversions = gson.fromJson<LinkedList<Conversion>>(json, type)
         }
+        if (conversions.isEmpty()) {
+            historicPlaceholder.setVisibility(View.VISIBLE) ;
+            historicPlaceholder.text="No conversions history available"
+        }else{
+            historicPlaceholder.setVisibility(View.GONE) ;
 
-        val AdaptadorConversions = hist_adapter(this.conversions)
+        val AdaptadorConversions = hist_adapter(this.conversions,historicPlaceholder)
         rvHistoric.setAdapter(AdaptadorConversions)
         rvHistoric.setLayoutManager(LinearLayoutManager(context))
-
+        }
         return root
     }
 

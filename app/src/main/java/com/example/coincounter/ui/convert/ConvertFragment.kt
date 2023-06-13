@@ -1,24 +1,24 @@
 package com.example.coincounter.ui.convert
 
 import android.R
-import android.R.attr.defaultValue
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnLayoutChangeListener
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.ahmedkgamil.searchablespinner.SearchableSpinner
 import com.example.coincounter.apiCall
 import com.example.coincounter.changerates
 import com.example.coincounter.databinding.FragmentConverterBinding
-import java.util.Objects
 
 
 class ConvertFragment : Fragment() {
@@ -43,35 +43,31 @@ class ConvertFragment : Fragment() {
 
         var ap: apiCall = apiCall()
         rates = ap.run(this.requireContext())
-
-        val spinner: Spinner = binding.spMoney
-        val spinnerRate: Spinner = binding.spRate
+        //val spinnerer2 =binding.spinnerTest
+        val spinner: SearchableSpinner = binding.spMoney as SearchableSpinner
+        val spinnerRate:SearchableSpinner = binding.spRate as SearchableSpinner
         val etRate: EditText = binding.etRate
         val etMoney: EditText = binding.etMoney
-
         val root: View = binding.root
+        val swapCurrency=binding.swapCurrency
+        etRate.setInputType(InputType.TYPE_NULL); //make the text disabled
 
-
-
-        /*val textView: TextView = binding.textNotifications
-        convertViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }*/
-
+        spinner.setTitle("Search item");
         if (rates != null && rates?.base != ""){
             var ratesList = rates!!.rateKeysToList()
-
             val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, ratesList)
             adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
             spinner.adapter = adapter
-
             val adapterRate = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, ratesList)
             adapterRate.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
             spinnerRate.adapter = adapter
-            //val textView2: TextView = binding.textNotifications2
-            //textView2.text = rates!!.rates["USD"].toString()
         }
-
+        spinner.setOnItemChangedListener {
+            updateConvertions(it as String,spinnerRate.selectedItem.toString(),etMoney,etRate)
+        }
+        spinnerRate.setOnItemChangedListener {
+            updateConvertions(spinner.selectedItem.toString(),it as String,etMoney,etRate)
+        }
         etMoney.addTextChangedListener(object:TextWatcher{
             override fun afterTextChanged(s: Editable?) { }
 
@@ -83,16 +79,30 @@ class ConvertFragment : Fragment() {
                 if(s.toString().isEmpty()){
                     etRate.setText("")
                 }else{
-                    val money = spinner.selectedItem.toString()
-                    val rate = spinnerRate.selectedItem.toString()
-                    val moneyValue = etMoney.text.toString().toDouble()
-                    val result:Double = rates!!.changeRate(money, rate, moneyValue)
-                    etRate.setText(result.toString())
+                    updateConvertions(spinner.selectedItem.toString(),spinnerRate.selectedItem.toString(),etMoney,etRate)
                 }
             }
         })
+        swapCurrency.setOnClickListener{
+            val auxPosition=spinner.selectedItemPosition
+            spinner.setSelection(spinnerRate.selectedItemPosition)
+            spinnerRate.setSelection(auxPosition)
+            updateConvertions(spinner.selectedItem.toString(),spinnerRate.selectedItem.toString(),etMoney,etRate)
+        }
 
         return root
+    }
+
+    public fun updateConvertions(money:String,rate:String,etMoney:EditText,etRate:EditText){
+            if(etMoney.text.isEmpty()){
+                return
+            }
+            val money = money
+            val rate = rate
+            val moneyValue = etMoney.text.toString().toDouble()
+            val result:Double = rates!!.changeRate(money, rate, moneyValue)
+            etRate.setText(result.toString())
+
     }
 
     public fun setRates(rates: changerates) {

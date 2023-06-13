@@ -10,6 +10,7 @@ import android.widget.CheckBox
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.ahmedkgamil.searchablespinner.SearchableSpinner
 import com.example.coincounter.apiCall
 import com.example.coincounter.changerates
 import com.example.coincounter.databinding.FragmentNavigationSettingsBinding
@@ -47,7 +48,7 @@ class navigation_settings : Fragment() {
         rates = ap.run(this.requireContext())
 
         var mSettings = requireContext()!!.getSharedPreferences(PREFS_NAME, 0)
-        val spinner: Spinner = binding.spSettings
+        val spinner: SearchableSpinner = binding.spSettings
         val btSave: Button = binding.btSettings
 
         val cb1cent: CheckBox = binding.checkBox1cents
@@ -83,7 +84,9 @@ class navigation_settings : Fragment() {
             }
         }
 
-
+        spinner.setOnItemChangedListener {
+            //don't remove this, I'm retarded and i don't want to fix it now.
+        }
 
         btSave.setOnClickListener {
             val selectedRate = spinner.selectedItem.toString()
