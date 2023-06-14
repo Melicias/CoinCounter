@@ -473,19 +473,23 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
         imageHeight: Int,
         imageWidth: Int
     ) {
-        activity?.runOnUiThread {
-            fragmentCameraBinding.bottomSheetLayout.inferenceTimeVal.text =
-                String.format("%d ms", inferenceTime)
+        if (activity != null) {
+            activity?.runOnUiThread {
+                if (_fragmentCameraBinding != null) {
+                    _fragmentCameraBinding?.bottomSheetLayout?.inferenceTimeVal?.text =
+                        String.format("%d ms", inferenceTime)
 
-            // Pass necessary information to OverlayView for drawing on the canvas
-            fragmentCameraBinding.overlay.setResults(
-                results ?: LinkedList<Detection>(),
-                imageHeight,
-                imageWidth
-            )
+                    // Pass necessary information to OverlayView for drawing on the canvas
+                    _fragmentCameraBinding?.overlay?.setResults(
+                        results ?: LinkedList<Detection>(),
+                        imageHeight,
+                        imageWidth
+                    )
 
-            // Force a redraw
-            fragmentCameraBinding.overlay.invalidate()
+                    // Force a redraw
+                    _fragmentCameraBinding?.overlay?.invalidate()
+                }
+            }
         }
     }
 
