@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.coincounter
+package com.example.coincounter.classes
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -36,9 +36,6 @@ class ObjectDetectorHelper(
   val context: Context,
   val objectDetectorListener: DetectorListener?
 ) {
-
-    // For this example this needs to be a var so it can be reset on changes. If the ObjectDetector
-    // will not change, a lazy val would be preferable.
     private var objectDetector: ObjectDetector? = null
 
     init {

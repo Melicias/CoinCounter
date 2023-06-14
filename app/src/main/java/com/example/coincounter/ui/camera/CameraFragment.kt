@@ -18,7 +18,6 @@ import android.view.SurfaceView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,10 +31,9 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import com.example.coincounter.Conversion
-import com.example.coincounter.ObjectDetectorHelper
+import com.example.coincounter.classes.Conversion
+import com.example.coincounter.classes.ObjectDetectorHelper
 import com.example.coincounter.R
 import com.example.coincounter.databinding.FragmentCameraBinding
 import com.google.gson.Gson

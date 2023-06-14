@@ -1,4 +1,4 @@
-package com.example.coincounter
+package com.example.coincounter.classes
 
 import java.time.LocalDateTime
 import java.util.Date
@@ -11,6 +11,4 @@ class Conversion(imagePath: String = "",
     var date: String = date
     var value: String = value
     var rateValue: String = rateValue
-
-
 }

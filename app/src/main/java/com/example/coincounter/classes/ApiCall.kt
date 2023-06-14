@@ -1,10 +1,6 @@
-package com.example.coincounter
+package com.example.coincounter.classes
 
-import android.R
 import android.content.Context
-import androidx.navigation.Navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import com.example.coincounter.ui.convert.ConvertFragment
 import com.google.gson.Gson
 import okhttp3.*
 import java.io.File
@@ -25,7 +21,6 @@ class apiCall {
 
     var rates:changerates? = null
 
-
     fun run(c: Context, url: String = url_final):changerates? {
         localpath =  c.getFilesDir().toPath().toString() + path
 
@@ -39,7 +34,6 @@ class apiCall {
                 e.printStackTrace()
                 file.delete()
             }
-
             if(this.rates == null || this.rates!!.timestamp == null){
                 file.delete()
                 return null
@@ -52,7 +46,6 @@ class apiCall {
         }else{
             return null
         }
-
         return this.rates
     }
 

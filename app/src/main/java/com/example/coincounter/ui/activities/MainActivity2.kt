@@ -1,19 +1,15 @@
-package com.example.coincounter
+package com.example.coincounter.ui.activities
 
 import android.Manifest
-import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import com.example.coincounter.R
+import com.example.coincounter.classes.apiCall
+import com.example.coincounter.classes.changerates
 import com.example.coincounter.databinding.ActivityMain2Binding
-import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import okhttp3.*
 import java.io.FileWriter
@@ -30,8 +26,8 @@ private lateinit var binding: ActivityMain2Binding
 
 class MainActivity2 : AppCompatActivity() {
 
-    var rates:changerates? = null
-    var ap:apiCall = apiCall()
+    var rates: changerates? = null
+    var ap: apiCall = apiCall()
     val client = OkHttpClient()
 
     val requestPermissionLauncher =

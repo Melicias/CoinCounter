@@ -6,7 +6,7 @@
     <string name="title_historic">Historic</string>
     <string name="title_camera">Camera</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="tvConvertMoney_string">Converter</string>
+    <string name="tvConvertMoney_string">Convert</string>
     <string name="tvConvertMoneyRate_string">To</string>
     <string name="settings_sp">Always convert to</string>
     <string name="settings_bt">Save</string>

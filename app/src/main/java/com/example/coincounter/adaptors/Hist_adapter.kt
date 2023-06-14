@@ -1,4 +1,4 @@
-package com.example.coincounter
+package com.example.coincounter.adaptors
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -17,24 +17,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
-import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.example.coincounter.R
+import com.example.coincounter.classes.Conversion
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import java.io.File
-import java.lang.reflect.Type
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.LinkedList
 
 
-class hist_adapter(conversions: LinkedList<Conversion>,placeholderText: TextView) : RecyclerView.Adapter<hist_adapter.ViewHolder>() {
+class hist_adapter(conversions: LinkedList<Conversion>, placeholderText: TextView) : RecyclerView.Adapter<hist_adapter.ViewHolder>() {
 
     // Hold a reference to the current animator so that it can be canceled
     // midway.
@@ -51,8 +47,7 @@ class hist_adapter(conversions: LinkedList<Conversion>,placeholderText: TextView
     var context: Context? = null
     var placeholderText:TextView=placeholderText
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): hist_adapter.ViewHolder {
-
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         context = parent.getContext()
         val inflater = LayoutInflater.from(context)
 
@@ -61,8 +56,8 @@ class hist_adapter(conversions: LinkedList<Conversion>,placeholderText: TextView
         return ViewHolder(HistView)
     }
 
-    override fun onBindViewHolder(holder: hist_adapter.ViewHolder, position: Int) {
-        var c:Conversion = this.conversions.get(position)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        var c: Conversion = this.conversions.get(position)
         var tvCoinHist: TextView = holder.tvCoinHist
         var tvRateHist: TextView = holder.tvRateHist
         var tvDateHist: TextView = holder.tvDateHist
@@ -70,8 +65,6 @@ class hist_adapter(conversions: LinkedList<Conversion>,placeholderText: TextView
         var btDelete: ImageButton = holder.btDelete
         //var container : FrameLayout =  holder.container
         //var expanded_image : ImageView = holder.expanded_image
-
-
 
         tvCoinHist.setText(c.value)
         tvRateHist.setText(c.rateValue)
@@ -93,9 +86,7 @@ class hist_adapter(conversions: LinkedList<Conversion>,placeholderText: TextView
 
         ivscreenshotHist.setOnClickListener(View.OnClickListener {
             //zoomImageFromThumb(ivscreenshotHist, BitmapFactory.decodeFile(imgFile.absolutePath),container,expanded_image)
-            // Open the screenshot file with an intent
-            // Replace YourActivityToDisplayScreenshot with your desired activity to display the screenshot
-            // You can also use other apps like image viewers to open the screenshot file
+
             val uri: Uri = FileProvider.getUriForFile(
                 context!!,
                 "com.yourdomain.fileprovider",
@@ -106,7 +97,6 @@ class hist_adapter(conversions: LinkedList<Conversion>,placeholderText: TextView
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             context!!.startActivity(intent)
         })
-
         //shortAnimationDuration = context!!.resources.getInteger(android.R.integer.config_shortAnimTime)
     }
 
@@ -144,7 +134,6 @@ class hist_adapter(conversions: LinkedList<Conversion>,placeholderText: TextView
                     //listener.onItemClick(pos)
                 }
             })
-
 
             /*btDetalhes = itemView.findViewById<View>(R.id.btDetalhes) as Button
             btDetalhes.setOnClickListener {

@@ -5,10 +5,8 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnLayoutChangeListener
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
@@ -16,8 +14,8 @@ import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.ahmedkgamil.searchablespinner.SearchableSpinner
-import com.example.coincounter.apiCall
-import com.example.coincounter.changerates
+import com.example.coincounter.classes.apiCall
+import com.example.coincounter.classes.changerates
 import com.example.coincounter.databinding.FragmentConverterBinding
 
 
@@ -50,7 +48,7 @@ class ConvertFragment : Fragment() {
         val etMoney: EditText = binding.etMoney
         val root: View = binding.root
         val swapCurrency=binding.swapCurrency
-        etRate.setInputType(InputType.TYPE_NULL); //make the text disabled
+        //etRate.setInputType(InputType.TYPE_NULL); //make the text disabled
 
         spinner.setTitle("Search item");
         if (rates != null && rates?.base != ""){

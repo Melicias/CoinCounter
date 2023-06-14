@@ -9,9 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.coincounter.Conversion
+import com.example.coincounter.classes.Conversion
 import com.example.coincounter.databinding.FragmentDashboardBinding
-import com.example.coincounter.hist_adapter
+import com.example.coincounter.adaptors.hist_adapter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type

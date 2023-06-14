@@ -1,4 +1,4 @@
-package com.example.coincounter
+package com.example.coincounter.classes
 
 import com.beust.klaxon.*
 import java.io.Serializable

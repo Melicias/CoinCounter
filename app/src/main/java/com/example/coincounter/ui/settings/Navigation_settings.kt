@@ -7,12 +7,11 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
-import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.ahmedkgamil.searchablespinner.SearchableSpinner
-import com.example.coincounter.apiCall
-import com.example.coincounter.changerates
+import com.example.coincounter.classes.apiCall
+import com.example.coincounter.classes.changerates
 import com.example.coincounter.databinding.FragmentNavigationSettingsBinding
 
 
@@ -93,7 +92,6 @@ class navigation_settings : Fragment() {
             val editor = mSettings.edit()
             editor.putString(DATA_TAG, selectedRate)
 
-            //COINS I WANT TO COUNT CHECKBOEXES
             editor.putBoolean(CB1CENT, cb1cent.isChecked())
             editor.putBoolean(CB2CENT, cb2cent.isChecked())
             editor.putBoolean(CB5CENT, cb5cent.isChecked())
@@ -106,7 +104,6 @@ class navigation_settings : Fragment() {
 
             Toast.makeText(requireContext(), "Saved", Toast.LENGTH_SHORT).show()
         }
-
         return root
     }
 
